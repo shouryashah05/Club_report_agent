@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Performance Analytics</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>Club Analytics</h1>
+            </div>
+            <p>Smart Event Analytics Platform</p>
+            <a href="agents.html" class="btn-secondary" style="text-decoration:none;font-size:0.9rem;padding:0.5rem 1rem;">AI Agents →</a>
+        </header>
+
+        <main>
+            <section id="upload-section" class="card active">
+                <h2>Upload Data</h2>
+                <p>Upload your CSV data files to generate a comprehensive club performance report.</p>
+                
+                <form id="upload-form">
+                    <div class="file-inputs">
+                        <div class="file-drop-area">
+                            <span class="file-label">Events Data (events.csv)</span>
+                            <input type="file" id="events" accept=".csv" required>
+                        </div>
+                        <div class="file-drop-area">
+                            <span class="file-label">Registrations (registrations.csv)</span>
+                            <input type="file" id="registrations" accept=".csv" required>
+                        </div>
+                        <div class="file-drop-area">
+                            <span class="file-label">Attendance (attendance.csv)</span>
+                            <input type="file" id="attendance" accept=".csv" required>
+                        </div>
+                        <div class="file-drop-area">
+                            <span class="file-label">Feedback (feedback.csv)</span>
+                            <input type="file" id="feedback" accept=".csv" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="submit-btn" class="btn-primary">
+                        <span>Analyze Data</span>
+                        <div class="spinner" id="spinner"></div>
+                    </button>
+                </form>
+            </section>
+
+            <section id="results-section" class="hidden">
+                <div class="results-header">
+                    <h2>Performance Report</h2>
+                    <button class="btn-secondary" onclick="location.reload()">Start Over</button>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card col-span-2">
+                        <h3>Rankings Overview</h3>
+                        <div class="table-responsive">
+                            <table id="rankings-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Club</th>
+                                        <th>Events</th>
+                                        <th>Attendance</th>
+                                        <th>Feedback</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Composite Scores</h3>
+                        <canvas id="scoreChart"></canvas>
+                    </div>
+
+                    <div class="card">
+                        <h3>Attendance vs. Feedback</h3>
+                        <canvas id="scatterChart"></canvas>
+                    </div>
+
+                    <div class="card col-span-2">
+                        <h3>AI Explanations</h3>
+                        <div id="explanations-container" class="explanations">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    
+                    <div class="card col-span-2 alert-box">
+                        <h3>Data Quality Notes</h3>
+                        <ul id="quality-notes">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

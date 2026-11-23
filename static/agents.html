@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Analytics — AI Agents</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="agents.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>Club Analytics</h1>
+            </div>
+            <nav class="top-nav">
+                <span id="llm-badge" class="llm-badge">Checking model…</span>
+                <a href="index.html">Report</a>
+                <a href="agents.html" class="active">AI Agents</a>
+            </nav>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="assistant">
+                <span class="tab-kicker">Tool calling · Memory</span>
+                <span class="tab-title">Ask the Agent</span>
+            </button>
+            <button class="tab" data-tab="council">
+                <span class="tab-kicker">Multi-agent collaboration</span>
+                <span class="tab-title">Agent Council</span>
+            </button>
+        </div>
+
+        <!-- ============================ ASK THE AGENT ============================ -->
+        <section id="assistant" class="tab-panel active">
+            <p class="concept">Ask anything about club performance. The model decides which <em>tools</em> to call and
+                answers from their results. It keeps <em>short-term memory</em> of this conversation, and
+                <em>long-term memory</em> of facts you ask it to remember, recalled later by similarity search.</p>
+
+            <div class="chat-grid">
+                <div class="card chat-card">
+                    <div class="card-head">
+                        <h3>Conversation</h3>
+                        <button class="btn-ghost" id="new-session">New session</button>
+                    </div>
+                    <div id="chat" class="chat"></div>
+                    <div class="chips" id="chips"></div>
+                    <form id="ask-form" class="ask-form">
+                        <input id="question" autocomplete="off" placeholder="Ask about the clubs, or say “Remember that …”">
+                        <button class="btn-primary small" type="submit" id="ask-btn">Ask</button>
+                    </form>
+                </div>
+
+                <div class="side-col">
+                    <div class="card">
+                        <h3>Agent Reasoning Trace</h3>
+                        <ol id="trace" class="trace"><li class="muted">Ask a question to see which tools the agent calls.</li></ol>
+                    </div>
+                    <div class="card">
+                        <h3>Short-Term Memory <span class="tag">this session</span></h3>
+                        <div id="stm" class="muted">Empty.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head">
+                            <h3>Long-Term Memory <span class="tag green">persists on disk</span></h3>
+                            <button class="btn-ghost" id="clear-ltm">Clear</button>
+                        </div>
+                        <ul id="ltm" class="ltm"><li class="muted">Nothing stored yet.</li></ul>
+                    </div>
+                    <div class="card">
+                        <h3>Tool Registry</h3>
+                        <ul id="tools" class="tools"></ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================ AGENT COUNCIL ============================ -->
+        <section id="council" class="tab-panel">
+            <p class="concept">A team of <em>role-based agents</em>, each with its own goal and tools, produces the report
+                together. They talk through <em>FIPA-ACL messages</em> (request, inform, propose, accept/reject). The
+                Gemini-powered Auditor stress-tests the Analyst's ranking, and a <em>human approves</em> before
+                anything is published.</p>
+
+            <div class="card">
+                <div class="card-head">
+                    <h3>The Team</h3>
+                    <button class="btn-primary small" id="run-council">▶ Run Agent Council</button>
+                </div>
+                <div id="agents" class="agents"></div>
+            </div>
+
+            <div class="council-grid">
+                <div class="card">
+                    <h3>Message Bus <span class="tag">FIPA-ACL · live</span></h3>
+                    <div id="messages" class="messages"><p class="muted">Press “Run Agent Council” to start.</p></div>
+                </div>
+                <div class="side-col">
+                    <div class="card hidden" id="approval-card">
+                        <h3>Human-in-the-Loop Approval</h3>
+                        <p class="muted">The Coordinator is asking the Faculty Coordinator to approve publishing the report.</p>
+                        <div class="approval-actions">
+                            <button class="btn-primary small approve" id="approve">Approve &amp; Publish</button>
+                            <button class="btn-secondary small" id="reject">Reject</button>
+                        </div>
+                        <div id="approval-status" class="status-pill hidden"></div>
+                    </div>
+                    <div class="card hidden" id="findings-card">
+                        <h3>Auditor Findings</h3>
+                        <ul id="findings" class="findings"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card hidden" id="report-card">
+                <h3>Draft Report (written by WriterAgent)</h3>
+                <div id="report" class="report"></div>
+            </div>
+        </section>
+    </div>
+    <script src="agents.js"></script>
+</body>
+</html>

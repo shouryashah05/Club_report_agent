@@ -1,0 +1,15 @@
+event_id,event_name,club_name,date,semester
+E01,Intro to Competitive Programming,Coding Club,2025-08-20,Odd 2025-26
+E02,48-Hour Hackathon,Coding Club,2025-09-15,Odd 2025-26
+E03,DSA Speed Contest,Coding Club,2025-10-25,Odd 2025-26
+E04,Line Follower Bot Workshop,Robotics Club,2025-08-28,Odd 2025-26
+E05,RoboWars Arena,Robotics Club,2025-09-30,Odd 2025-26
+E06,Drone Building Bootcamp,Robotics Club,2025-11-10,Odd 2025-26
+E07,Intro to Neural Networks,AI/ML Club,2025-09-05,Odd 2025-26
+E08,Kaggle Challenge Sprint,AI/ML Club,2025-10-08,Odd 2025-26
+E09,GenAI Hands-on Lab,AI/ML Club,2025-11-20,Odd 2025-26
+E10,Capture The Flag Night,Cybersecurity Club,2025-09-12,Odd 2025-26
+E11,Ethical Hacking Workshop,Cybersecurity Club,2025-10-18,Odd 2025-26
+E12,Bug Bounty Bootcamp,Cybersecurity Club,2025-12-02,Odd 2025-26
+E13,Smart Home Demo Day,IoT Club,2025-09-22,Odd 2025-26
+E14,Sensor Networks Workshop,IoT Club,2025-11-05,Odd 2025-26
