@@ -9,12 +9,12 @@ async function post(url, body = {}) {
     return res.json();
 }
 
-// ---------------- Tabs + model badge ----------------
-document.querySelectorAll('.tab').forEach((tab) => {
-    tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab, .tab-panel').forEach((el) => el.classList.remove('active'));
-        tab.classList.add('active');
-        $(tab.dataset.tab).classList.add('active');
+// ---------------- Tabs (via segmented control in toolbar) + model badge ----------------
+document.querySelectorAll('.seg-btn[data-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.seg-btn[data-tab], .tab-panel').forEach((el) => el.classList.remove('active'));
+        btn.classList.add('active');
+        $(btn.dataset.tab).classList.add('active');
     });
 });
 
@@ -25,9 +25,69 @@ function refreshBadge() {
         badge.textContent = s.llm ? `● Gemini live · ${s.model}`
             : s.quota_blocked ? `● Gemini quota used up · offline for ${Math.ceil(s.retry_in_seconds / 60)} min`
             : '● Offline mode (no Gemini key)';
+        // Also update sidebar dot
+        const dot = $('sidebar-dot');
+        const lbl = $('sidebar-model');
+        if (dot && lbl) {
+            dot.style.background = s.llm ? 'var(--green)' : 'var(--yellow)';
+            lbl.textContent = s.llm ? s.model : 'Offline mode';
+        }
     });
 }
 refreshBadge();
+
+// ---------------- Circular Inspector Buttons Logic (78% Chat default) ----------------
+const PANEL_TITLES = {
+    'trace': 'Agent Reasoning Trace',
+    'stm': 'Short-Term Memory (Session Context)',
+    'ltm': 'Long-Term Memory (Disk Vectors)',
+    'tools': 'Tool Registry & Declarations'
+};
+
+function setInspectorPanel(panelKey) {
+    const workspace = $('assistant-workspace');
+    const drawer = $('inspector-drawer');
+    const titleEl = $('inspector-title');
+
+    // Hide all sections
+    ['trace', 'stm', 'ltm', 'tools'].forEach((k) => {
+        const sec = $(`section-${k}`);
+        if (sec) sec.classList.add('hidden');
+    });
+
+    // If panelKey is null, close inspector (chat returns to 78% width)
+    if (!panelKey) {
+        document.querySelectorAll('.btn-circular').forEach((btn) => btn.classList.remove('active'));
+        if (drawer) drawer.classList.add('hidden');
+        if (workspace) workspace.classList.remove('has-inspector-open');
+        return;
+    }
+
+    // Toggle circular button highlight
+    document.querySelectorAll('.btn-circular').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.panel === panelKey);
+    });
+
+    const activeSec = $(`section-${panelKey}`);
+    if (activeSec) activeSec.classList.remove('hidden');
+    if (titleEl) titleEl.textContent = PANEL_TITLES[panelKey] || 'Inspector';
+
+    if (drawer) drawer.classList.remove('hidden');
+    if (workspace) workspace.classList.add('has-inspector-open');
+}
+
+document.querySelectorAll('.btn-circular').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        const panel = btn.dataset.panel;
+        if (btn.classList.contains('active')) {
+            setInspectorPanel(null);
+        } else {
+            setInspectorPanel(panel);
+        }
+    });
+});
+
+$('close-inspector')?.addEventListener('click', () => setInspectorPanel(null));
 
 // =====================================================================
 // Ask the Agent
@@ -271,7 +331,7 @@ $('reject').addEventListener('click', () => decide(false));
 window.addEventListener('load', async () => {
     const params = new URLSearchParams(location.search);
     if (params.get('run') === 'council') {
-        document.querySelector('[data-tab=council]').click();
+        document.querySelector('.seg-btn[data-tab=council]')?.click();
         $('run-council').click();
     } else if (params.get('q')) {
         for (const q of params.get('q').split('|')) await ask(q);

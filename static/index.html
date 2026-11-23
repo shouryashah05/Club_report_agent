@@ -3,111 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club Performance Analytics</title>
+    <title>Club Analytics — Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <div class="logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h1>Club Analytics</h1>
+    <div class="app-shell">
+
+        <!-- ─── Sidebar (3 Navigation Lines + 3-Line Hamburger) ─── -->
+        <aside class="sidebar" id="app-sidebar">
+            <div class="sidebar-header">
+                <a href="landing.html" class="sidebar-brand">
+                    <div class="brand-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <span class="brand-name">Club Analytics</span>
+                </a>
+                <button class="menu-toggle-btn" id="sidebar-toggle" title="Toggle Navigation" aria-label="Toggle Navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
-            <p>Smart Event Analytics Platform</p>
-            <a href="agents.html" class="btn-secondary" style="text-decoration:none;font-size:0.9rem;padding:0.5rem 1rem;">AI Agents →</a>
-        </header>
 
-        <main>
-            <section id="upload-section" class="card active">
-                <h2>Upload Data</h2>
-                <p>Upload your CSV data files to generate a comprehensive club performance report.</p>
-                
-                <form id="upload-form">
-                    <div class="file-inputs">
-                        <div class="file-drop-area">
-                            <span class="file-label">Events Data (events.csv)</span>
-                            <input type="file" id="events" accept=".csv" required>
-                        </div>
-                        <div class="file-drop-area">
-                            <span class="file-label">Registrations (registrations.csv)</span>
-                            <input type="file" id="registrations" accept=".csv" required>
-                        </div>
-                        <div class="file-drop-area">
-                            <span class="file-label">Attendance (attendance.csv)</span>
-                            <input type="file" id="attendance" accept=".csv" required>
-                        </div>
-                        <div class="file-drop-area">
-                            <span class="file-label">Feedback (feedback.csv)</span>
-                            <input type="file" id="feedback" accept=".csv" required>
-                        </div>
+            <nav class="sidebar-nav">
+                <!-- Line 1: Home Overview -->
+                <a href="landing.html" class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Home Overview
+                </a>
+                <!-- Line 2: Analytics Dashboard -->
+                <a href="index.html" class="nav-item active">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                    Analytics Dashboard
+                </a>
+                <!-- Line 3: AI Agent Council -->
+                <a href="agents.html" class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+                    AI Agent Council
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-status">
+                    <span class="status-dot"></span>
+                    <span class="status-label">Smart Event Analytics</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ─── Main area ─── -->
+        <div class="main-area">
+
+            <!-- ─── Toolbar ─── -->
+            <header class="toolbar">
+                <h2 class="toolbar-title">Dashboard</h2>
+                <div class="toolbar-actions">
+                    <div class="segmented-control" id="view-switcher">
+                        <button class="seg-btn active" data-view="upload">Upload</button>
+                        <button class="seg-btn" data-view="results" disabled>Results</button>
                     </div>
-                    
-                    <button type="submit" id="submit-btn" class="btn-primary">
-                        <span>Analyze Data</span>
-                        <div class="spinner" id="spinner"></div>
+                </div>
+            </header>
+
+            <!-- ─── Canvas ─── -->
+            <main class="canvas">
+
+                <!-- UPLOAD VIEW -->
+                <section id="upload-section" class="view active">
+                    <div class="upload-hero">
+                        <h1 class="hero-title">Analyze Club Performance</h1>
+                        <p class="hero-sub">Drop all 4 CSV files at once, or use the sample dataset to generate a benchmark report instantly.</p>
+                    </div>
+
+                    <!-- Sample data CTA -->
+                    <button type="button" id="sample-btn" class="btn-accent-block">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <span>Use Sample Data</span>
+                        <div class="spinner" id="sample-spinner"></div>
                     </button>
-                </form>
-            </section>
 
-            <section id="results-section" class="hidden">
-                <div class="results-header">
-                    <h2>Performance Report</h2>
-                    <button class="btn-secondary" onclick="location.reload()">Start Over</button>
-                </div>
+                    <div class="divider"><span>or drop your own files</span></div>
 
-                <div class="dashboard-grid">
-                    <div class="card col-span-2">
-                        <h3>Rankings Overview</h3>
-                        <div class="table-responsive">
-                            <table id="rankings-table">
-                                <thead>
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th>Club</th>
-                                        <th>Events</th>
-                                        <th>Attendance</th>
-                                        <th>Feedback</th>
-                                        <th>Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
+                    <!-- Drop zone -->
+                    <form id="upload-form">
+                        <div id="drop-zone" class="drop-zone">
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="drop-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <p class="drop-text">Drag &amp; drop all 4 CSVs here, or <label for="file-input" class="browse-link">browse</label></p>
+                            <p class="drop-hint">events.csv · registrations.csv · attendance.csv · feedback.csv</p>
+                            <input type="file" id="file-input" accept=".csv" multiple hidden>
                         </div>
-                    </div>
 
-                    <div class="card">
-                        <h3>Composite Scores</h3>
-                        <canvas id="scoreChart"></canvas>
-                    </div>
-
-                    <div class="card">
-                        <h3>Attendance vs. Feedback</h3>
-                        <canvas id="scatterChart"></canvas>
-                    </div>
-
-                    <div class="card col-span-2">
-                        <h3>AI Explanations</h3>
-                        <div id="explanations-container" class="explanations">
-                            <!-- Populated by JS -->
-                        </div>
-                    </div>
-                    
-                    <div class="card col-span-2 alert-box">
-                        <h3>Data Quality Notes</h3>
-                        <ul id="quality-notes">
-                            <!-- Populated by JS -->
+                        <ul id="file-checklist" class="file-checklist hidden">
+                            <li data-key="events"><span class="check">✗</span> events.csv</li>
+                            <li data-key="registrations"><span class="check">✗</span> registrations.csv</li>
+                            <li data-key="attendance"><span class="check">✗</span> attendance.csv</li>
+                            <li data-key="feedback"><span class="check">✗</span> feedback.csv</li>
                         </ul>
+
+                        <button type="submit" id="submit-btn" class="btn-primary" disabled>
+                            <span>Analyze Data</span>
+                            <div class="spinner" id="spinner"></div>
+                        </button>
+                    </form>
+                </section>
+
+                <!-- RESULTS VIEW -->
+                <section id="results-section" class="view hidden">
+                    <div class="results-header">
+                        <h1 class="hero-title">Performance Report</h1>
+                        <button class="btn-ghost" onclick="location.reload()">← New Analysis</button>
                     </div>
-                </div>
-            </section>
-        </main>
+
+                    <div class="dashboard-grid">
+                        <div class="panel col-span-2">
+                            <h3 class="panel-title">Rankings Overview</h3>
+                            <div class="table-responsive">
+                                <table id="rankings-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Club</th>
+                                            <th>Events</th>
+                                            <th>Attendance</th>
+                                            <th>Feedback</th>
+                                            <th>Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <h3 class="panel-title">Composite Scores</h3>
+                            <canvas id="scoreChart"></canvas>
+                        </div>
+
+                        <div class="panel">
+                            <h3 class="panel-title">Attendance vs. Feedback</h3>
+                            <canvas id="scatterChart"></canvas>
+                        </div>
+
+                        <div class="panel col-span-2">
+                            <h3 class="panel-title">AI Explanations</h3>
+                            <div id="explanations-container" class="explanations"></div>
+                        </div>
+
+                        <div class="panel col-span-2 alert-panel">
+                            <h3 class="panel-title">Data Quality Notes</h3>
+                            <ul id="quality-notes"></ul>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
     </div>
     <script src="app.js"></script>
+    <script>
+        // Sidebar toggle
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('app-sidebar');
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+    </script>
 </body>
 </html>

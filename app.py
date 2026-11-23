@@ -18,12 +18,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-os.makedirs("static", exist_ok=True)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+import os
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+os.makedirs(os.path.join(BASE_DIR, "static"), exist_ok=True)
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 @app.get("/")
 async def root():
+    return RedirectResponse(url="/static/landing.html")
+
+@app.get("/landing")
+async def landing_page():
+    return RedirectResponse(url="/static/landing.html")
+
+@app.get("/dashboard")
+async def dashboard_page():
     return RedirectResponse(url="/static/index.html")
+
+DATA_DIR = os.path.join(BASE_DIR, "data")
+EXPECTED_FILES = ["events.csv", "registrations.csv", "attendance.csv", "feedback.csv"]
+
+
+def _run_agent(raw_data: dict) -> dict:
+    """Shared helper: run the analytics agent on four DataFrames."""
+    agent = SmartEventAnalyticsAgent()
+    return agent.run_with_data(
+        query="Analyze all technical events conducted last semester and tell me which clubs performed the best.",
+        raw_data=raw_data,
+    )
+
 
 @app.post("/api/analyze")
 async def analyze_data(
@@ -46,13 +70,27 @@ async def analyze_data(
             "feedback": feedback_df
         }
 
-        agent = SmartEventAnalyticsAgent()
-        result = agent.run_with_data(
-            query="Analyze all technical events conducted last semester and tell me which clubs performed the best.",
-            raw_data=raw_data
-        )
+        return JSONResponse(content=_run_agent(raw_data))
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
-        return JSONResponse(content=result)
+
+@app.post("/api/analyze-sample")
+async def analyze_sample():
+    """Run the analytics pipeline on the built-in data/ CSVs."""
+    try:
+        missing = [f for f in EXPECTED_FILES if not os.path.isfile(os.path.join(DATA_DIR, f))]
+        if missing:
+            raise HTTPException(status_code=404, detail=f"Missing sample files: {', '.join(missing)}")
+
+        raw_data = {
+            name.replace(".csv", ""): pd.read_csv(os.path.join(DATA_DIR, name))
+            for name in EXPECTED_FILES
+        }
+        return JSONResponse(content=_run_agent(raw_data))
+    except HTTPException:
+        raise
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Club Analytics — AI Intelligence Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Landing page custom GlassUI styles */
+        .landing-hero {
+            text-align: center;
+            padding: 4.5rem 1.5rem 3rem;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .landing-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 1rem;
+            background: rgba(10, 132, 255, 0.12);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            border-radius: var(--radius-pill);
+            color: #70b8ff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(10, 132, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+        }
+        .landing-title {
+            font-size: 3.25rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.04em;
+            margin-bottom: 1.25rem;
+            background: linear-gradient(180deg, #FFFFFF 30%, rgba(255, 255, 255, 0.65) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .landing-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            max-width: 720px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .landing-cta-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+        .cta-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.85rem 1.8rem;
+            background: linear-gradient(135deg, var(--accent), #2b56f5);
+            color: white;
+            font-weight: 600;
+            font-size: 0.96rem;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(10, 132, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .cta-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(10, 132, 255, 0.55);
+        }
+        .cta-btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.85rem 1.6rem;
+            background: var(--bg-raised);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.96rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-glass);
+            text-decoration: none;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--glass-rim);
+            transition: all 0.2s;
+        }
+        .cta-btn-secondary:hover {
+            background: var(--glass-hover);
+            border-color: var(--border-specular);
+            transform: translateY(-2px);
+        }
+        .landing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+        .feature-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            backdrop-filter: blur(28px);
+            box-shadow: var(--glass-shadow), var(--glass-rim);
+            transition: transform 0.25s, border-color 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-specular);
+        }
+        .feature-icon-wrapper {
+            width: 46px; height: 46px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            display: grid; place-items: center;
+            margin-bottom: 1.25rem;
+            color: var(--accent);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .feature-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        .feature-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            background: var(--bg-raised);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 1.8rem 2rem;
+            margin-bottom: 4rem;
+            backdrop-filter: blur(24px);
+            box-shadow: var(--glass-shadow), var(--glass-rim);
+            text-align: center;
+        }
+        .stat-val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            margin-bottom: 0.25rem;
+        }
+        .stat-lbl {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
+        @media (max-width: 900px) {
+            .landing-title { font-size: 2.4rem; }
+            .landing-grid { grid-template-columns: 1fr; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+
+        <!-- ─── Sidebar (3 Navigation Lines + 3-Line Hamburger) ─── -->
+        <aside class="sidebar" id="app-sidebar">
+            <div class="sidebar-header">
+                <a href="landing.html" class="sidebar-brand">
+                    <div class="brand-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <span class="brand-name">Club Analytics</span>
+                </a>
+                <button class="menu-toggle-btn" id="sidebar-toggle" title="Toggle Navigation" aria-label="Toggle Navigation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- Line 1: Home / Landing -->
+                <a href="landing.html" class="nav-item active">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Home Overview
+                </a>
+                <!-- Line 2: Analytics Dashboard -->
+                <a href="index.html" class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                    Analytics Dashboard
+                </a>
+                <!-- Line 3: AI Agents Studio -->
+                <a href="agents.html" class="nav-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+                    AI Agent Council
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-status">
+                    <span class="status-dot"></span>
+                    <span class="status-label">Smart Event Analytics</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ─── Main Area ─── -->
+        <div class="main-area">
+
+            <!-- ─── Glass Top Toolbar ─── -->
+            <header class="toolbar">
+                <h2 class="toolbar-title">Platform Overview</h2>
+                <div class="toolbar-actions">
+                    <a href="index.html" class="btn-primary small">Launch Dashboard →</a>
+                </div>
+            </header>
+
+            <!-- ─── Main Content Canvas ─── -->
+            <main class="canvas">
+                <div class="landing-hero">
+                    <div class="landing-badge">
+                        <span>✨ Multi-Agent Intelligence Engine</span>
+                    </div>
+                    <h1 class="landing-title">Smart Event Analytics &amp; Autonomous Agent Council</h1>
+                    <p class="landing-subtitle">
+                        Rigorously rank college technical clubs from multi-stream data, audit scoring vulnerabilities, and converse with an intelligent agent equipped with short-term &amp; long-term vector memory.
+                    </p>
+                    <div class="landing-cta-group">
+                        <a href="index.html" class="cta-btn-primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Launch Dashboard
+                        </a>
+                        <a href="agents.html" class="cta-btn-secondary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>
+                            Enter Agent Studio
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Stats Bar -->
+                <div class="stats-bar">
+                    <div>
+                        <div class="stat-val">7</div>
+                        <div class="stat-lbl">Analytics Tools</div>
+                    </div>
+                    <div>
+                        <div class="stat-val">4</div>
+                        <div class="stat-lbl">Autonomous Agents</div>
+                    </div>
+                    <div>
+                        <div class="stat-val">FIPA</div>
+                        <div class="stat-lbl">ACL Protocol Bus</div>
+                    </div>
+                    <div>
+                        <div class="stat-val">100%</div>
+                        <div class="stat-lbl">Human Verifiable</div>
+                    </div>
+                </div>
+
+                <!-- Feature Grid -->
+                <div class="landing-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        </div>
+                        <h3 class="feature-title">One-Click Ingestion</h3>
+                        <p class="feature-desc">
+                            Drop all four CSV files (events, registrations, attendance, feedback) simultaneously or tap "Use Sample Data" for instant benchmark rankings.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper" style="color:var(--purple)">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <h3 class="feature-title">Ask the Agent</h3>
+                        <p class="feature-desc">
+                            Interactive conversational analyst with tool calling. Maintains short-term session memory and long-term disk vectors with cosine-similarity recall.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper" style="color:var(--green)">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3 class="feature-title">Agent Council Debate</h3>
+                        <p class="feature-desc">
+                            Auditor stress-tests rankings by removing fragile event data. Writer crafts executive synthesis, and publication is gated by human faculty approval.
+                        </p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        // Sidebar toggle for mobile / desktop
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('app-sidebar');
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+    </script>
+</body>
+</html>

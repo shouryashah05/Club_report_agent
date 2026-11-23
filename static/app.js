@@ -1,35 +1,121 @@
-document.getElementById('upload-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const eventsFile = document.getElementById('events').files[0];
-    const regFile = document.getElementById('registrations').files[0];
-    const attFile = document.getElementById('attendance').files[0];
-    const fbFile = document.getElementById('feedback').files[0];
+// ---------------------------------------------------------------------------
+// View switcher (segmented control in toolbar)
+// ---------------------------------------------------------------------------
+document.querySelectorAll('.seg-btn[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        document.querySelectorAll('.seg-btn[data-view]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.classList.add('hidden'); });
+        const target = document.getElementById(btn.dataset.view === 'results' ? 'results-section' : 'upload-section');
+        target.classList.remove('hidden');
+        target.classList.add('active');
+    });
+});
 
-    if (!eventsFile || !regFile || !attFile || !fbFile) {
-        alert("Please select all 4 CSV files.");
-        return;
+// ---------------------------------------------------------------------------
+// File mapping: match dropped / selected files to expected names
+// ---------------------------------------------------------------------------
+const EXPECTED = ['events', 'registrations', 'attendance', 'feedback'];
+const collected = {};          // key → File
+
+function matchFile(file) {
+    const name = file.name.toLowerCase().replace(/\s+/g, '_');
+    for (const key of EXPECTED) {
+        if (name.includes(key)) {
+            collected[key] = file;
+            return key;
+        }
+    }
+    return null;
+}
+
+function refreshChecklist() {
+    const list = document.getElementById('file-checklist');
+    list.classList.remove('hidden');
+
+    for (const key of EXPECTED) {
+        const li = list.querySelector(`li[data-key="${key}"]`);
+        const span = li.querySelector('.check');
+        if (collected[key]) {
+            span.textContent = '✓';
+            li.classList.add('matched');
+        } else {
+            span.textContent = '✗';
+            li.classList.remove('matched');
+        }
     }
 
-    const formData = new FormData();
-    formData.append('events', eventsFile);
-    formData.append('registrations', regFile);
-    formData.append('attendance', attFile);
-    formData.append('feedback', fbFile);
+    const allReady = EXPECTED.every(k => collected[k]);
+    document.getElementById('submit-btn').disabled = !allReady;
+}
 
-    const submitBtn = document.getElementById('submit-btn');
-    const spinner = document.getElementById('spinner');
-    const btnText = submitBtn.querySelector('span');
-    
+// ---------------------------------------------------------------------------
+// Drop zone
+// ---------------------------------------------------------------------------
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+function handleFiles(files) {
+    const unmatched = [];
+    for (const f of files) {
+        if (!matchFile(f)) unmatched.push(f.name);
+    }
+    refreshChecklist();
+    if (unmatched.length) {
+        alert('Could not match these files to any expected name:\n' + unmatched.join(', ') +
+              '\n\nExpected filenames containing: events, registrations, attendance, feedback');
+    }
+}
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+// ---------------------------------------------------------------------------
+// Upload & analyze (custom files)
+// ---------------------------------------------------------------------------
+document.getElementById('upload-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!EXPECTED.every(k => collected[k])) return;
+
+    const formData = new FormData();
+    for (const key of EXPECTED) formData.append(key, collected[key]);
+
+    await runAnalysis('/api/analyze', { method: 'POST', body: formData });
+});
+
+// ---------------------------------------------------------------------------
+// Sample data (one-click)
+// ---------------------------------------------------------------------------
+document.getElementById('sample-btn').addEventListener('click', async () => {
+    await runAnalysis('/api/analyze-sample', { method: 'POST' }, 'sample');
+});
+
+// ---------------------------------------------------------------------------
+// Shared analysis runner
+// ---------------------------------------------------------------------------
+async function runAnalysis(url, fetchOpts, mode = 'upload') {
+    const submitBtn  = document.getElementById('submit-btn');
+    const sampleBtn  = document.getElementById('sample-btn');
+    const spinner    = mode === 'sample'
+        ? document.getElementById('sample-spinner')
+        : document.getElementById('spinner');
+    const btnText    = (mode === 'sample' ? sampleBtn : submitBtn).querySelector('span');
+    const prevLabel  = btnText.textContent;
+
     submitBtn.disabled = true;
+    sampleBtn.disabled = true;
     btnText.textContent = 'Processing...';
     spinner.style.display = 'inline-block';
 
     try {
-        const response = await fetch('/api/analyze', {
-            method: 'POST',
-            body: formData
-        });
+        const response = await fetch(url, fetchOpts);
 
         if (!response.ok) {
             const error = await response.text();
@@ -38,20 +124,30 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
 
         const data = await response.json();
         renderDashboard(data);
-        
+
         document.getElementById('upload-section').classList.remove('active');
         document.getElementById('upload-section').classList.add('hidden');
         document.getElementById('results-section').classList.remove('hidden');
+        document.getElementById('results-section').classList.add('active');
+        // Enable and activate the Results tab in the segmented control
+        const resultsBtn = document.querySelector('.seg-btn[data-view="results"]');
+        if (resultsBtn) { resultsBtn.disabled = false; resultsBtn.classList.add('active'); }
+        const uploadBtn = document.querySelector('.seg-btn[data-view="upload"]');
+        if (uploadBtn) uploadBtn.classList.remove('active');
     } catch (err) {
-        alert("Error analyzing data: " + err.message);
+        alert('Error analyzing data: ' + err.message);
         console.error(err);
     } finally {
         submitBtn.disabled = false;
-        btnText.textContent = 'Analyze Data';
+        sampleBtn.disabled = false;
+        btnText.textContent = prevLabel;
         spinner.style.display = 'none';
     }
-});
+}
 
+// ---------------------------------------------------------------------------
+// Dashboard rendering (unchanged)
+// ---------------------------------------------------------------------------
 function renderDashboard(data) {
     renderTable(data.ranked);
     renderExplanations(data.explanations, data.ranked);
@@ -115,8 +211,8 @@ function renderNotes(notes) {
 }
 
 function renderCharts(metrics, ranked) {
-    Chart.defaults.color = '#94a3b8';
-    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#86868B';
+    Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
 
     // Score Chart (Bar)
     const scoreCtx = document.getElementById('scoreChart').getContext('2d');
@@ -132,8 +228,8 @@ function renderCharts(metrics, ranked) {
             datasets: [{
                 label: 'Composite Score',
                 data: scores,
-                backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                borderColor: 'rgba(59, 130, 246, 1)',
+                backgroundColor: 'rgba(10, 132, 255, 0.7)',
+                borderColor: 'rgba(10, 132, 255, 1)',
                 borderWidth: 1,
                 borderRadius: 6
             }]
@@ -146,7 +242,7 @@ function renderCharts(metrics, ranked) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' }
                 },
                 x: {
                     grid: { display: false }
@@ -173,7 +269,7 @@ function renderCharts(metrics, ranked) {
             datasets: [{
                 label: 'Clubs',
                 data: scatterData,
-                backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                backgroundColor: 'rgba(48, 209, 88, 0.7)',
                 pointRadius: 8,
                 pointHoverRadius: 10
             }]
@@ -194,13 +290,13 @@ function renderCharts(metrics, ranked) {
             scales: {
                 x: {
                     title: { display: true, text: 'Attendance Rate (%)' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     min: 0,
                     max: 100
                 },
                 y: {
                     title: { display: true, text: 'Average Feedback' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
                     min: 0,
                     max: 5
                 }

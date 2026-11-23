@@ -25,7 +25,7 @@ from datetime import datetime
 import llm
 from agent import METRIC_WEIGHTS, calculate_metrics, collect_data, rank_clubs, understand_request, validate_and_clean
 
-MEMORY_DIR = os.path.join(os.path.dirname(__file__), "memory_store")
+MEMORY_DIR = os.path.join("/tmp", "memory_store") if os.environ.get("VERCEL") else os.path.join(os.path.dirname(__file__), "memory_store")
 LONG_TERM_FILE = os.path.join(MEMORY_DIR, "long_term_memory.json")
 SHORT_TERM_WINDOW = 6   # conversation turns replayed to the model
 MAX_TOOL_STEPS = 4      # cap on model requests per question (saves quota)

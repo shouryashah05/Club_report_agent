@@ -8,7 +8,7 @@ from datetime import datetime
 import pandas as pd
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
+OUTPUT_DIR = os.path.join("/tmp", "output") if os.environ.get("VERCEL") else os.path.join(os.path.dirname(__file__), "output")
 
 # Weights used when ALL metrics are available for a club.
 # Re-normalized on the fly for any club missing a metric (see calculate_metrics).

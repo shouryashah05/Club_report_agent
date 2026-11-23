@@ -317,9 +317,12 @@ def decide(run_id: str, approve: bool, comment: str = "") -> dict:
         bus.send(Message(HUMAN, "Coordinator", "agree", comment or "Approved. Publish it."))
         report = run["report_md"] + f"\n\n_Approved for publication by the {HUMAN} on " \
                                     f"{datetime.now():%Y-%m-%d %H:%M}._"
-        os.makedirs(OUTPUT_DIR, exist_ok=True)
-        with open(os.path.join(OUTPUT_DIR, "approved_report.md"), "w", encoding="utf-8") as f:
-            f.write(report)
+        try:
+            os.makedirs(OUTPUT_DIR, exist_ok=True)
+            with open(os.path.join(OUTPUT_DIR, "approved_report.md"), "w", encoding="utf-8") as f:
+                f.write(report)
+        except Exception as err:
+            print(f"Warning: could not write approved_report.md to disk: {err}")
         bus.send(Message("Coordinator", HUMAN, "inform", "Published. Saved to output/approved_report.md."))
         status = "published"
     else:
